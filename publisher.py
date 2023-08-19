@@ -23,24 +23,26 @@ def on_connect(client, userdata, flags, rc):
 
 # Parse the RSS feed and publish each entry to the MQTT broker
 def publish_rss_feed_to_mqtt():
-    for topic_key, (mqtt_topic, rss_url) in RSS_FEEDS.items():
-        feed = feedparser.parse(rss_url)
-        for entry in feed.entries:
-            title = entry.title
-            link = entry.link
-            summary = entry.summary
+    while True:
+        for topic_key, (mqtt_topic, rss_url) in RSS_FEEDS.items():
+            feed = feedparser.parse(rss_url)
+            for entry in feed.entries:
+                title = entry.title
+                link = entry.link
+                summary = entry.summary
 
-            message = {
-                "title": title,
-                "link": link,
-                "summary": summary
-            }
+                message = {
+                    "title": title,
+                    "link": link,
+                    "summary": summary
+                }
 
-            message_json = json.dumps(message)
+                message_json = json.dumps(message)
 
-            client.publish(mqtt_topic, message_json)
-            print(f"Published to {mqtt_topic}: {title}")
-            time.sleep(1)
+                client.publish(mqtt_topic, message_json)
+                print(f"Published to {mqtt_topic}: {title}")
+                time.sleep(1)
+        time.sleep(600) # delay of 10 minutes before looking for new feeds
 
 
 client = mqtt.Client()
@@ -51,5 +53,3 @@ client.connect(MQTT_BROKER_HOST, MQTT_BROKER_PORT, 60)
 client.loop_start()
 
 publish_rss_feed_to_mqtt()
-
-client.loop_stop()
