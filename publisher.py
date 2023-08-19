@@ -17,6 +17,8 @@ RSS_FEEDS = {
 MQTT_BROKER_HOST = "localhost"
 MQTT_BROKER_PORT = 1883
 
+QOS_LEVEL = 1
+
 # Callback when the MQTT client connects to the broker
 def on_connect(client, userdata, flags, rc):
     print(f"Connected to MQTT broker with result code {rc}")
@@ -39,7 +41,7 @@ def publish_rss_feed_to_mqtt():
 
                 message_json = json.dumps(message)
 
-                client.publish(mqtt_topic, message_json)
+                client.publish(mqtt_topic, message_json, qos=QOS_LEVEL)
                 print(f"Published to {mqtt_topic}: {title}")
                 time.sleep(1)
         time.sleep(600) # delay of 10 minutes before looking for new feeds

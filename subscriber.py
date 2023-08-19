@@ -5,6 +5,8 @@ import json
 MQTT_BROKER_HOST = "localhost"
 MQTT_BROKER_PORT = 1883
 
+QOS_LEVEL = 1
+
 # Predefined Topics
 TOPICS = {
     "technology": "news/technology",
@@ -42,7 +44,7 @@ user_interests = ["technology", "climate_change"] # Example
 for interest in user_interests:
     topic = TOPICS.get(interest)
     if topic:
-        client.subscribe(topic)
+        client.subscribe(topic, qos=QOS_LEVEL)
         print(f"Subscribed to {topic}")
 
 # Start the MQTT client loop
