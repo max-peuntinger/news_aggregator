@@ -8,12 +8,12 @@ import time
 
 # RSS Feeds Configuration
 RSS_FEEDS = {
-    "technology": ("news/technology", "https://www.technologyreview.com/feed/"),
-    "golem": ("news/technology", "https://www.golem.de/rss.php?feed=RSS2.0"),
-    "tagesschau_technology": ("news/technology", "https://www.tagesschau.de/xml/rss2"),
-    "climate_change": ("news/climate_change", "https://www.umweltbundesamt.de/uba-info-presse/feed"),
-    "eu_politics_euractiv": ("news/eu_politics", "https://www.euractiv.com/feed/"),
-    "eu_politics_tagesschau": ("news/eu_politics", "https://www.tagesschau.de/xml/rss2"),
+    "technology": ("News/Technology", "https://www.technologyreview.com/feed/"),
+    "golem": ("News/Technology", "https://www.golem.de/rss.php?feed=RSS2.0"),
+    "tagesschau_technology": ("News/Technology", "https://www.tagesschau.de/xml/rss2"),
+    "climate_change": ("News/Climate_change", "https://www.umweltbundesamt.de/uba-info-presse/feed"),
+    "eu_politics_euractiv": ("News/Eu_politics", "https://www.euractiv.com/feed/"),
+    "eu_politics_tagesschau": ("News/Eu_politics", "https://www.tagesschau.de/xml/rss2"),
 }
 
 # MQTT Broker Configuration
