@@ -8,12 +8,15 @@ import time
 
 # RSS Feeds Configuration
 RSS_FEEDS = {
-    "technology": ("News/Technology", "https://www.technologyreview.com/feed/"),
-    "golem": ("News/Technology", "https://www.golem.de/rss.php?feed=RSS2.0"),
-    "tagesschau_technology": ("News/Technology", "https://www.tagesschau.de/xml/rss2"),
-    "climate_change": ("News/Climate_change", "https://www.umweltbundesamt.de/uba-info-presse/feed"),
-    "eu_politics_euractiv": ("News/Eu_politics", "https://www.euractiv.com/feed/"),
-    "eu_politics_tagesschau": ("News/Eu_politics", "https://www.tagesschau.de/xml/rss2"),
+    "technology": ("news/technology", "https://www.technologyreview.com/feed/"),
+    "golem": ("news/technology", "https://www.golem.de/rss.php?feed=RSS2.0"),
+    "environment_germany": ("news/environment_germany", "https://www.bmuv.de/umwelt.rss"),
+    "eu_politics_euractiv": ("news/eu_politics", "https://www.euractiv.com/feed/"),
+    "eu_politics_tagesschau": ("news/eu_politics", "https://www.tagesschau.de/xml/rss2"),
+    "aachener_zeitung_aachen": ("news/aachen", "https://www.aachener-zeitung.de/lokales/aachen/feed.rss"),
+    "aachener_zeitung_nrw": ("news/nrw", "https://www.aachener-zeitung.de/nrw-region/feed.rss"),
+    "ccc": ("news/ccc", "https://www.ccc.de/de/rss/updates.xml"), # not working
+
 }
 
 # MQTT Broker Configuration
@@ -58,13 +61,14 @@ def publish_rss_feed_to_mqtt():
                     "topic": mqtt_topic,
                     "published_at": entry.published,
                 }
+                print(message)
 
                 articles_collection.insert_one(message)
 
                 message_json = dumps(message, default=json_encoder)
 
                 client.publish(mqtt_topic, message_json, qos=QOS_LEVEL)
-           #     print(f"Published to {mqtt_topic}: {title}")
+                print(f"Published to {mqtt_topic}: {title}")
                 time.sleep(1)
         time.sleep(600) # delay of 10 minutes before looking for new feeds
 
