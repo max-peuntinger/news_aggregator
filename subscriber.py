@@ -29,7 +29,7 @@ def on_message(client, userdata, msg):
     url = news_item.get("url")
     timestamp = news_item.get("timestamp")
 
-    print(f"Title: {title}\nSummary: {summary}\nURL: {url}\nTimestamp: {timestamp}\n")
+    # print(f"Title: {title}\nSummary: {summary}\nURL: {url}\nTimestamp: {timestamp}\n")
 
 # Create an MQTT client
 client = mqtt.Client()
@@ -45,7 +45,7 @@ for interest in user_interests:
     topic = TOPICS.get(interest)
     if topic:
         client.subscribe(topic, qos=QOS_LEVEL)
-        print(f"Subscribed to {topic}")
+        # print(f"Subscribed to {topic}")
 
 # Start the MQTT client loop
 client.loop_forever()

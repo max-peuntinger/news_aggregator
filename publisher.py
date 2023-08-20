@@ -48,7 +48,7 @@ def publish_rss_feed_to_mqtt():
                 # Check if the article with the same link already exists in the collection
                 existing_article = articles_collection.find_one({"link": link})
                 if existing_article:
-                    print(f"Article with link {link} already exists. Skipping.")
+                    # print(f"Article with link {link} already exists. Skipping.")
                     continue
 
                 message = {
@@ -64,7 +64,7 @@ def publish_rss_feed_to_mqtt():
                 message_json = dumps(message, default=json_encoder)
 
                 client.publish(mqtt_topic, message_json, qos=QOS_LEVEL)
-                print(f"Published to {mqtt_topic}: {title}")
+           #     print(f"Published to {mqtt_topic}: {title}")
                 time.sleep(1)
         time.sleep(600) # delay of 10 minutes before looking for new feeds
 
