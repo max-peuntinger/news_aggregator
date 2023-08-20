@@ -45,6 +45,12 @@ def publish_rss_feed_to_mqtt():
                 link = entry.link
                 summary = entry.summary
 
+                # Check if the article with the same link already exists in the collection
+                existing_article = articles_collection.find_one({"link": link})
+                if existing_article:
+                    print(f"Article with link {link} already exists. Skipping.")
+                    continue
+
                 message = {
                     "title": title,
                     "link": link,
