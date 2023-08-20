@@ -70,3 +70,22 @@ def register_user(user: UserRegistration):
     })
 
     return {"message": "Registration successful"}
+
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+@app.post("/login")
+def login_user(user: UserLogin):
+    # Find the user in the database
+    existing_user = users_collection.find_one({"username": user.username})
+    if not existing_user:
+        raise HTTPException(status_code=400, detail="Username not found")
+
+    # Verify the password
+    hashed_password = existing_user["password"]
+    if bcrypt.checkpw(user.password.encode('utf-8'), hashed_password):
+        return {"message": "Login successful"}
+    else:
+        raise HTTPException(status_code=400, detail="Incorrect password")
