@@ -2,8 +2,19 @@ from pydantic import BaseModel
 from typing import List
 from fastapi import FastAPI
 from pymongo import MongoClient
+from fastapi.middleware.cors import CORSMiddleware
+
+
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust this to your needs
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 client = MongoClient('localhost', 27017)
 db = client['news_aggregator']
