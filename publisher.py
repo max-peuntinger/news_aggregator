@@ -1,6 +1,9 @@
+from bson.objectid import ObjectId
+from bson.json_util import dumps
 import feedparser
 import json
 import paho.mqtt.client as mqtt
+from pymongo import MongoClient
 import time
 
 # RSS Feeds Configuration
@@ -19,9 +22,18 @@ MQTT_BROKER_PORT = 1883
 
 QOS_LEVEL = 1
 
+client = MongoClient('localhost', 27017)
+db = client['news_aggregator']
+articles_collection = db['articles']
+
 # Callback when the MQTT client connects to the broker
 def on_connect(client, userdata, flags, rc):
     print(f"Connected to MQTT broker with result code {rc}")
+
+def json_encoder(obj):
+    if isinstance(obj, ObjectId):
+        return str(obj)
+    raise TypeError("Object of type '%s' is not JSON serializable" % type(obj).__name__)
 
 # Parse the RSS feed and publish each entry to the MQTT broker
 def publish_rss_feed_to_mqtt():
@@ -36,10 +48,14 @@ def publish_rss_feed_to_mqtt():
                 message = {
                     "title": title,
                     "link": link,
-                    "summary": summary
+                    "summary": summary,
+                    "topic": mqtt_topic,
+                    "published_at": entry.published,
                 }
 
-                message_json = json.dumps(message)
+                articles_collection.insert_one(message)
+
+                message_json = dumps(message, default=json_encoder)
 
                 client.publish(mqtt_topic, message_json, qos=QOS_LEVEL)
                 print(f"Published to {mqtt_topic}: {title}")
