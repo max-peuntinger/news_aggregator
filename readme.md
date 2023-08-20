@@ -38,3 +38,5 @@ Description: News and analysis on EU politics from Germany's primary public-serv
 Installation and Usage
 
 [Installation instructions ...]
+
+run all services with $./start-all.sh
