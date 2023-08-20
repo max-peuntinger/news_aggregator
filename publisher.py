@@ -1,7 +1,7 @@
 from bson.objectid import ObjectId
 from bson.json_util import dumps
+import html
 import feedparser
-import json
 import paho.mqtt.client as mqtt
 from pymongo import MongoClient
 import time
@@ -41,9 +41,9 @@ def publish_rss_feed_to_mqtt():
         for topic_key, (mqtt_topic, rss_url) in RSS_FEEDS.items():
             feed = feedparser.parse(rss_url)
             for entry in feed.entries:
-                title = entry.title
+                title = html.unescape(entry.title)
                 link = entry.link
-                summary = entry.summary
+                summary = html.unescape(entry.summary)
 
                 # Check if the article with the same link already exists in the collection
                 existing_article = articles_collection.find_one({"link": link})

@@ -14,7 +14,7 @@
   {#each articles as article}
     <li>
       <a href={article.link} target="_blank">{article.title}</a>
-      <p>{article.summary}</p> <!-- Change description to summary to match the FastAPI model -->
+      <p>{@html article.summary}</p> <!-- Use {@html} to render summary as HTML -->
     </li>
   {/each}
 </ul>
