@@ -10,7 +10,7 @@ QOS_LEVEL = 1
 # Predefined Topics
 TOPICS = {
     "technology": "news/technology",
-    "climate_change": "news/climate_change",
+    "environment_germany": "news/environment_germany",
     "german_politics": "news/german_politics",
     "eu_politics": "news/eu_politics",
 }
