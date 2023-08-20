@@ -44,3 +44,5 @@ def get_articles():
         article['_id'] = str(article['_id'])
     
     return articles
+
+print("app started")
