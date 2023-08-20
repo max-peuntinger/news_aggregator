@@ -4,3 +4,7 @@ mosquitto_pub -t test/topic -m "Hello, World!" in other terminal: prints to firs
  
 start mongodb
 sudo mongod --config /etc/mongod.conf
+
+start fastapi: $uvicorn app:app --reload
+
+start svelte: $cd svelte-app  $npm run dev

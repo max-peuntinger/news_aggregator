@@ -1,0 +1,17 @@
+# Dependencies
+/node_modules
+
+# Build artifacts
+/public/build
+
+# Environment files
+.env
+
+# Editor and OS-specific files
+.DS_Store
+*.log
+.vscode/
+
+# Python cache files
+__pycache__/
+*.py[cod]
