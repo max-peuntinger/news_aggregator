@@ -1,10 +1,10 @@
 import bcrypt
+from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pymongo import MongoClient
 from typing import List
-
 
 app = FastAPI()
 
@@ -34,14 +34,34 @@ class Article(BaseModel):
     published_at: str
 
 
+def parse_date(date_string): 
+    #TODO: articles has mixed types, so this is needed -> should look for simpler solution, maybe transform when inserted to get uniform format
+    formats = [
+        '%a, %d %b %Y %H:%M:%S %z', # 'Fri, 18 Aug 2023 12:10:00 +0000'
+        '%Y-%m-%dT%H:%M:%S%z',      # '2023-08-18T17:20:22+02:00'
+        # Add other formats as needed
+    ]
+    
+    for fmt in formats:
+        try:
+            return datetime.strptime(date_string, fmt)
+        except ValueError:
+            continue
+    
+    raise ValueError(f"Time data {date_string} does not match any known formats")
+
 @app.get("/articles", response_model=List[Article])
 def get_articles():
     articles_collection = db['articles']
     articles = list(articles_collection.find({}))
     
-    # Convert ObjectId to string
+    # Convert ObjectId to string and published_at to datetime
     for article in articles:
         article['_id'] = str(article['_id'])
+        article['published_at'] = parse_date(article['published_at'])
+    articles.sort(key=lambda x: x['published_at'], reverse=True)
+    for article in articles:
+        article['published_at'] = article['published_at'].isoformat()
     
     return articles
 
