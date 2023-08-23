@@ -59,11 +59,7 @@ def get_articles():
     for article in articles:
         article['_id'] = str(article['_id'])
         article['published_at'] = parse_date(article['published_at'])
-    
-    # Sort articles by published_at in descending order
     articles.sort(key=lambda x: x['published_at'], reverse=True)
-    
-    # Convert published_at back to string if needed
     for article in articles:
         article['published_at'] = article['published_at'].isoformat()
     
