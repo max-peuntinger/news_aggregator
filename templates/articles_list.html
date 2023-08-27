@@ -1,0 +1,7 @@
+{% for article in articles %}
+<div class="row">
+    <a href="{{ article.link }}" target="_blank">{{ article.title }}</a>
+    <p>{{ article.summary }}</p>
+    <span class="date">{{ article.published_at }}</span>
+</div>
+{% endfor %}

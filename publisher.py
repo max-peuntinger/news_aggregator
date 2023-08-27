@@ -28,7 +28,6 @@ QOS_LEVEL = 1
 client = MongoClient('localhost', 27017)
 db = client['news_aggregator']
 articles_collection = db['articles']
-users_collection = db["users"]
 
 # Callback when the MQTT client connects to the broker
 def on_connect(client, userdata, flags, rc):
