@@ -1,12 +1,16 @@
 import bcrypt
 from datetime import datetime
-from fastapi import FastAPI, HTTPException
+from dateutil.parser import parse as parse_date
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from pymongo import MongoClient
-from typing import List
+from typing import List, Optional
 
 app = FastAPI()
+
+templates = Jinja2Templates(directory="templates")
 
 app.add_middleware(
     CORSMiddleware,
@@ -50,20 +54,80 @@ def parse_date(date_string):
     
     raise ValueError(f"Time data {date_string} does not match any known formats")
 
-@app.get("/articles", response_model=List[Article])
-def get_articles():
+
+# @app.get("/articles")
+# async def get_articles_page(request: Request):
+#     articles_collection = db['articles']
+#     articles = list(articles_collection.find({}))
+#     # Convert ObjectId to string and published_at to datetime
+#     for article in articles:
+#         article['_id'] = str(article['_id'])
+#         article['published_at'] = parse_date(article['published_at'])
+#     articles.sort(key=lambda x: x['published_at'], reverse=True)
+#     for article in articles:
+#         article['published_at'] = article['published_at'].isoformat()
+#     return templates.TemplateResponse("articles.html", {"request": request, "articles": articles})
+
+
+@app.get("/articles")
+async def get_articles_page(request: Request):
     articles_collection = db['articles']
     articles = list(articles_collection.find({}))
-    
-    # Convert ObjectId to string and published_at to datetime
+    topics = articles_collection.distinct('topic')  # Assuming 'topic' is the field name
+    categories = ['All'] + list(set([format_category(topic.split('/').pop()) for topic in topics if topic]))
     for article in articles:
         article['_id'] = str(article['_id'])
         article['published_at'] = parse_date(article['published_at'])
     articles.sort(key=lambda x: x['published_at'], reverse=True)
     for article in articles:
         article['published_at'] = article['published_at'].isoformat()
+    return templates.TemplateResponse("articles.html", {"request": request, "articles": articles, "categories": categories})
+
+def format_category(category):
+    return category.replace('_', ' ').title()
+
+
+@app.get("/articles2")
+async def get_filtered_articles(request: Request, topic: Optional[str] = None):
+    articles_collection = db['articles']
+    if topic and topic != 'All':
+        formatted_topic = topic.replace(' ', '_').lower()
+        articles = list(articles_collection.find({"topic": {"$regex": formatted_topic, "$options": "i"}}))
+    else:
+        articles = list(articles_collection.find({}))
+    for article in articles:
+        article['_id'] = str(article['_id'])
+        article['published_at'] = parse_date(article['published_at'])
+    articles.sort(key=lambda x: x['published_at'], reverse=True)
+    for article in articles:
+        article['published_at'] = article['published_at'].isoformat()
+    return templates.TemplateResponse("articles_list.html", {"request": request, "articles": articles})
+
+
+@app.get("/articles_list")
+async def get_articles2(request: Request, q: Optional[str] = None):
+    articles_collection = db['articles']
     
-    return articles
+    # If a query is provided, filter articles by title
+    if q:
+        articles = list(articles_collection.find({"title": {"$regex": q, "$options": "i"}}))
+    else:
+        articles = list(articles_collection.find({}))
+    
+    # Convert ObjectId to string and published_at to datetime
+    for article in articles:
+        article['_id'] = str(article['_id'])
+        article['published_at'] = parse_date(article['published_at'])
+    
+    # Sort articles by published date
+    # articles.sort(key=lambda x: x['published_at'], reverse=True)
+    
+    # Convert datetime back to string for rendering
+    for article in articles:
+        article['published_at'] = article['published_at'].isoformat()
+    
+    print(articles)
+    return templates.TemplateResponse("articles_list.html", {"request": request, "articles": articles})
 
 
 class UserRegistration(BaseModel):

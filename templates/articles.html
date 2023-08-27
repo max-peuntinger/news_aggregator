@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles</title>
+    <!-- Include htmx library -->
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <style>
+        .box:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        .box + .box {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar (optional) -->
+<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="#">
+            Articles
+        </a>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<section class="section">
+    <div class="container">
+
+        <!-- Dropdown filter for articles -->
+        <div class="field">
+            <label class="label" for="article-filter">Filter Articles by Category:</label>
+            <div class="control">
+                <div class="select">
+                    <select id="article-filter" hx-get="/articles2" hx-trigger="change" hx-target="#articles-content" hx-indicator="#loading-indicator" onchange="updateHxVals(this)">
+                        {% for cat in categories %}
+                        <option value="{{ cat }}">{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <span id="loading-indicator" class="tag is-light is-loading" style="display:none;">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Container for the articles -->
+        <div id="articles-content">
+            {% for article in articles %}
+            <div class="box">
+                <h2 class="title is-3 has-text-weight-bold"><a href="{{ article.link }}" target="_blank">{{ article.title }}</a></h2>
+                <div class="content">
+                    {{ article.summary|safe }}
+                </div>
+                <span class="tag is-light">{{ article.published_at }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+<!-- JavaScript to load articles initially -->
+<script>
+    window.onload = function() {
+        var articlesContent = document.getElementById('articles-content');
+        if (articlesContent) {
+            htmx.trigger(articlesContent, 'htmx:load', {url: '/articles2'});
+        }
+    };
+
+    function updateHxVals(selectElement) {
+        const selectedValue = selectElement.value;
+        const hxValsValue = selectedValue === 'All' ? '{}' : `{"topic": "${selectedValue}"}`;
+        selectElement.setAttribute('hx-vals', hxValsValue);
+        htmx.trigger(selectElement, 'htmx:trigger');
+    };
+    
+</script>
+
+</body>
+</html>
